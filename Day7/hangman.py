@@ -1,18 +1,41 @@
 # Hangman
 
 import random
-word_list = ["ardvark", "baboon", "camel"]
-chosen_word = random.choice(word_list)
+import hangman_words
+import hangman_art
+
+lives = 6
+chosen_word = random.choice(hangman_words.word_list)
+
+print(hangman_art.logo)
 
 # Testing code
 print(f"Psst, the solution is {chosen_word}.")
 
 display = ["_"] * len(chosen_word)
 
-guess = input("Please guess a letter: ").lower()
+while '_' in display and lives > 0:
 
-for index, letter in enumerate(chosen_word):
-    if letter == guess:
-        display[index] = guess
+    guess = input("Please guess a letter: ").lower()
 
-print(display)
+    if guess in display:
+        print(f"You've already guessed {guess}")
+
+    guessed_correctly = False
+
+    for index, letter in enumerate(chosen_word):
+        if letter == guess:
+            display[index] = guess
+            guessed_correctly = True
+    
+    if not guessed_correctly:
+        print(f"You guessed {guess}, that's not in the word. You lose a life.")
+        lives -= 1
+
+    print(" ".join(display))
+    print(hangman_art.stages[lives])
+
+if lives > 0:
+    print("You win.")
+else:
+    print("You lose.")
