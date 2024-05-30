@@ -18,17 +18,49 @@ shift = int(input("Type the shift number:\n"))
 
     ##🐛Bug alert: What happens if you try to encode the word 'civilization'?🐛
 
-def encrypt(text, shift):
+# def encrypt(text, shift):
     
+#     cypher = ""
+
+#     for c in text:
+#         index = alphabet.index(c) + shift
+#         if index >= len(alphabet):
+#             cypher += alphabet[index - len(alphabet)]
+#         else:
+#             cypher += alphabet[index]
+
+#     print(f"The encoded text is {cypher}")
+
+# def decrypt(text, shift):
+    
+#     cypher = ""
+
+#     for c in text:
+#         index = alphabet.index(c) - shift
+#         if index < 0:
+#             cypher += alphabet[index + len(alphabet)]
+#         else:
+#             cypher += alphabet[index]
+
+#     print(f"The encoded text is {cypher}")
+
+def caesar(direction, text, shift):
     cypher = ""
+    original_shift = shift
 
     for c in text:
+        if direction == "decode":
+            shift = original_shift * -1
+            
         index = alphabet.index(c) + shift
+        
         if index >= len(alphabet):
             cypher += alphabet[index - len(alphabet)]
+        elif index < 0:
+            cypher += alphabet[index + len(alphabet)]
         else:
             cypher += alphabet[index]
 
-    print(f"The encoded text is {cypher}")
-#TODO-3: Call the encrypt function and pass in the user inputs. You should be able to test the code and encrypt a message. 
-encrypt(text, shift)
+    print(f"The {direction}d text is {cypher}")
+
+caesar(direction, text, shift)
