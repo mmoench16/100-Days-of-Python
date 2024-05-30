@@ -46,12 +46,10 @@ shift = int(input("Type the shift number:\n"))
 
 def caesar(direction, text, shift):
     cypher = ""
-    original_shift = shift
+    if direction == "decode":
+        shift *= -1
 
     for c in text:
-        if direction == "decode":
-            shift = original_shift * -1
-            
         index = alphabet.index(c) + shift
         
         if index >= len(alphabet):
