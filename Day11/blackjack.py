@@ -22,7 +22,6 @@ from art import logo
 import random
 import os
 
-cards = [11, *range(2, 10), *[10] * 4]
 computer_cards = []
 player_cards = []
 
@@ -30,20 +29,29 @@ clear = lambda: os.system('clear')
 
 print(logo)
 
-def setup():
+def setup(reset_game):
     """Asks user if they want to play a game and returns True or False."""
     wants_to_play = input("Do you want to play a game of Blackjack? Type 'y' or 'n': ")
     if wants_to_play == "n":
         return False
     else:
-        computer_cards.append(deal_card())
-        computer_cards.append(deal_card())
-        player_cards.append(deal_card())
-        player_cards.append(deal_card())
+        if reset_game:
+            reset()
+        for _ in range(2):
+            computer_cards.append(deal_card())
+            player_cards.append(deal_card())
         return True
+
+def reset():
+    computer_cards.clear()
+    player_cards.clear()
+    clear()
+    print(logo)
+    print("Do you want to play a game of Blackjack? Type 'y' or 'n': y")
 
 def deal_card():
     """Random draws a card from the deck."""
+    cards = [11, *range(2, 10), *[10] * 4]
     return random.choice(cards)
 
 def calculate_score(cards) -> int:
@@ -62,11 +70,7 @@ def calculate_score(cards) -> int:
     return score
 
 def check_score(c_score, p_score) -> bool:
-    if p_score == 0:
-        return False
-    elif c_score == 0:
-        return False
-    elif p_score > 21:
+    if p_score == 0 or c_score == 0 or p_score > 21:
         return False
     
     return True
@@ -78,7 +82,7 @@ def compare(c_score, p_score) -> tuple[str, bool]:
         return "Opponent"
     elif p_score == 0:
         return "You"
-    elif p_score == 21:
+    elif p_score > 21:
         return "Opponent"
     elif c_score > 21:
         return "You"
@@ -96,9 +100,9 @@ def print_scores(c_score, p_score, final):
         print(f"\tYour cards: {player_cards}, current score: {p_score}")
         print(f"\tComputer's first card: {computer_cards[0]}")
 
-def play():
-    # Sets up game or exists if no.
-    game_active = setup()
+def play(reset_game):
+    # Sets up or resets game or exists if no.
+    game_active = setup(reset_game)
     if not game_active:
         print("OK, bye.")
         return None
@@ -137,11 +141,11 @@ def play():
     elif winner == "You":
         print(f"{winner} win. Hurray 😄.")
 
-    play()
+    play(True)
 
     
 
-play()
+play(False)
 
 ##################### Hints #####################
 
