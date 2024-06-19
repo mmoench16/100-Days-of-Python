@@ -76,32 +76,42 @@ def process_coins():
 
     return (quarters * QUARTER) + (dimes * DIME) + (nickles * NICKLE) + (pennies * PENNY)
 
-# TODO: 6. Check transaction successful?
-def check_transaction(amount, choice, menu):
+def check_transaction(amount, choice, menu, credit):
     """Takes inserted coins as an input and determines whether enough money has been provided."""
-    cost = menu[choice][cost]
+    cost = menu[choice]["cost"]
 
     if amount < cost:
         print("Sorry that's not enough money. Money refunded.")
-        return False
+        return False, 0.0
     elif amount > cost:
         change = round(amount-cost, 2)
+        credit += cost
         print(f"Here is ${change} dollars in change.")
 
-    credit += cost
-    return True
+    return True, credit
 
+def make_coffee(choice, resources, menu):
+    """Makes the coffee, i.e. deducts the resources and returns the beverage."""
+    ingredients = menu[choice]["ingredients"]
+    for ingredient in ingredients:
+        resources[ingredient] -= ingredients[ingredient]
 
-# TODO: 7. Make coffee
+    return resources 
 
 while machine_on:
     choice = prompt_user_for_choice()
     print(f"Choice: {choice}")
     if choice == "off":
         machine_on = False
+        continue
     
     if choice == "report":
         print_report(resources, credit)
+        continue
 
-    check_resources(resources, MENU, choice)
-    print(f"Money: {process_coins()}")
+    enouch_resources = check_resources(resources, MENU, choice)
+    if enouch_resources:
+        amount = process_coins()
+        transaction_successful , credit = check_transaction(amount, choice, MENU, credit)[0:2]
+        if transaction_successful:
+            resources = make_coffee(choice, resources, MENU)
