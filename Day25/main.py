@@ -1,46 +1,21 @@
-# with open("weather_data.csv") as weather_data:
-#     data = weather_data.readlines()
+import turtle
 
-# print(data)
+screen = turtle.Screen()
+screen.title("US States Game")
+img = "blank_states_img.gif"
+screen.addshape(img)
 
-# import csv
+turtle.shape(img)
 
-# with open("weather_data.csv") as data_file:
-#     data = csv.reader(data_file)
-#     temperatures = []
-#     for idx, row in enumerate(data):
-#         if idx != 0:
-#             temperatures.append(int(row[1]))
+answer_state = screen.textinput(title="Guess the State",
+                                prompt="What's another state?")
 
-import pandas
+print(answer_state)
 
-data = pandas.read_csv("weather_data.csv")
-# print(type(data))
-# print(data["temp"])
 
-data_dict = data.to_dict()
-print(data_dict)
+# def get_mouse_click_coor(x, y):
+#     print(x, y)
 
-temp_list = data["temp"].to_list()
-print(temp_list)
-# avg_temp = sum(temp_list) / len(temp_list)
+# turtle.onscreenclick(get_mouse_click_coor)
 
-# print(f"Avg: {data["temp"].mean()}")
-# print(f"Max: {data["temp"].max()}")
-
-# print(data.condition)
-
-# print(data[data.temp == data.temp.max()])
-
-# monday = data[data.day == "Monday"]
-# print(monday.condition)
-# print(f"Celsius: {monday.temp[0]} | Fahrenheit: {monday.temp[0] * 9/5 + 32}")
-
-# Create DataFrame from scratch
-data_dict = {
-    "students": ["Amy", "James", "Angela"],
-    "scores": [76, 56, 65]
-}
-
-data = pandas.DataFrame(data_dict)
-data.to_csv("new_data.csv")
+# turtle.mainloop()
