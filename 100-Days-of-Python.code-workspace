@@ -29,6 +29,9 @@
 		},
 		{
 			"path": "Day25"
+		},
+		{
+			"path": "Day26"
 		}
 	],
 	"settings": {}

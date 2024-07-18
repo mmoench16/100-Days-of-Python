@@ -1,3 +1,10 @@
-names = ["Alex", "Beth", "Caroline", "Dave", "Eleanor", "Freddie"]
-new_names = [name.upper() for name in names if len(name) >= 5]
-print(new_names)
+import pandas
+
+phonetic_alphabet = pandas.read_csv("nato_phonetic_alphabet.csv")
+phonetic_alphabet_dict = {row.letter:row.code for (_, row) in phonetic_alphabet.iterrows()}
+
+word = input("Type a word: ").upper()
+
+phonetic_word = [phonetic_alphabet_dict[letter] for letter in word]
+
+print(phonetic_word)
