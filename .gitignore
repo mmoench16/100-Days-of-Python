@@ -161,3 +161,4 @@ cython_debug/
 
 # Exclude Course Resources
 Course Resources/
+Day32/birthdays.csv

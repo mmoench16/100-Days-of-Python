@@ -21,7 +21,7 @@ def send_quote(quote):
         connection.starttls()
         connection.login(user=my_email, password=password)
         connection.sendmail(from_addr=my_email, 
-                            to_addrs="", 
+                            to_addrs=recipient_email, 
                             msg=f"Subject:Motivational Quote\n\n{quote}")
 
 if now.weekday() == 3:
