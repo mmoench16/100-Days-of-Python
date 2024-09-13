@@ -1,5 +1,6 @@
 import requests
 import os
+from datetime import datetime
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -37,12 +38,23 @@ headers = {
 # response = requests.post(url=graph_endpoint, json=graph_config, headers=headers)
 # print(response.text)
 
+today = datetime.now().strftime("%Y%m%d")
+
 pixel_config = {
-    "date": "20240909",
-    "quantity": "25.2"
+    "date": today,
+    "quantity": "45.3"
+}
+
+pixel_update_config = {
+    "quantity": "45.3"
 }
 
 pixel_endpoint = f"{graph_endpoint}/graph1"
+pixel_update_endpoint = f"{graph_endpoint}/graph1/{today}"
+pixel_delete_endpoint = f"{graph_endpoint}/graph1/{today}"
 
-response = requests.post(url=pixel_endpoint, json=pixel_config, headers=headers)
+
+# response = requests.post(url=pixel_endpoint, json=pixel_config, headers=headers)
+# response = requests.put(url=pixel_update_endpoint, json=pixel_update_config, headers=headers)
+response = requests.delete(url=pixel_delete_endpoint, headers=headers)
 print(response.text)
