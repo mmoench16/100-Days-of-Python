@@ -6,6 +6,7 @@ load_dotenv()
 
 TOKEN_ENDPOINT = "https://test.api.amadeus.com/v1/security/oauth2/token"
 CITY_SEARCH_ENDPOINT = "https://test.api.amadeus.com/v1/reference-data/locations/cities"
+FLIGHT_OFFERS_ENDPOINT="https://test.api.amadeus.com/v2/shopping/flight-offers"
 
 class FlightSearch:
     """The FlightSearch class is responsible for retrieving flight information."""
@@ -91,3 +92,27 @@ class FlightSearch:
         response.raise_for_status()
 
         return response.json()["access_token"]
+    
+    def get_flight_data(self, origin_city_code: str, destination_city_code: str, from_date: str, to_date: str) -> dict | None:
+        """
+        Retrieves flight data for a specified origin city, destination city, and time range using the Amadeus API.
+        """
+
+        header = {
+            "Authorization": f"Bearer {self._token}"
+        }
+
+        query = {
+            "originLocationCode": origin_city_code,
+            "destinationLocationCode": destination_city_code,
+            "departureDate": from_date.strftime("%Y-%m-%d"),
+            "returnDate": to_date.strftime("%Y-%m-%d"),
+            "currencyCode": "GBP",
+            "adults": 1,
+            "max": 10
+        }
+
+        response = requests.get(url=FLIGHT_OFFERS_ENDPOINT, headers=header, params=query)
+        response.raise_for_status()
+
+        return response.json()
