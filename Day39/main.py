@@ -2,7 +2,8 @@
 from data_manager import DataManager
 from flight_search import FlightSearch
 from datetime import datetime, timedelta
-import json
+from flight_data import find_cheapest_flight
+import time
 
 HOME_AIRPORT = "LHR"
 
@@ -13,17 +14,22 @@ flight_search = FlightSearch()
 
 data_manager = DataManager()
 
-# sheet_data = data_manager.get_flight_data()
+sheet_data = data_manager.get_flight_data()
 
-# if sheet_data[0]['iataCode'] == '':
-#         for row in sheet_data:
-#             row['iataCode'] = flight_search.get_iata_code(row['city'])
-#         print(f"sheet_data:\n {sheet_data}")
+print(sheet_data)
 
-#         data_manager.destination_data = sheet_data
-#         data_manager.update_destination_codes()
+if sheet_data[0]['iataCode'] == '':
+        for row in sheet_data:
+            row['iataCode'] = flight_search.get_iata_code(row['city'])
+            time.sleep(2)
+        print(f"sheet_data:\n {sheet_data}")
 
+        data_manager.destination_data = sheet_data
+        data_manager.update_destination_codes()
 
-
-with open('flight_data.txt', 'w') as f:
-    f.write(json.dumps(flight_search.get_flight_data("LHR", "HND", departure_date, return_date)))
+for city in sheet_data:
+    print(f"Getting flights for {city['city']}...")
+    flight_info = flight_search.get_flight_data(HOME_AIRPORT, city['iataCode'], departure_date, return_date)
+    cheapest_flight = find_cheapest_flight(flight_info)
+    print(f"{city['city']}: £{cheapest_flight.price}")
+    time.sleep(2)
