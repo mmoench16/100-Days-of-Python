@@ -6,18 +6,18 @@ from dotenv import load_dotenv
 # Load environment variables from .env file
 load_dotenv()
 
-SHEETY_PRICES_ENDPOINT = "https://api.sheety.co/315a5b9eabed04aec7a5e0d7b417ab17/flightDeals/prices"
-
-
 class DataManager:
 
     def __init__(self):
         self.sheety_auth_token = { "Authorization": f"Bearer {os.getenv("SHEETY_AUTH_TOKEN")}" }
+        self.SHEETY_PRICES_ENDPOINT = os.getenv("SHEETY_PRICES_ENDPOINT")
+        self.SHEETY_USERS_ENDPOINT = os.getenv("SHEETY_USERS_ENDPOINT")
         self.destination_data = {}
+        self.user_data = {}
 
     def get_destination_data(self):
         # Use the Sheety API to GET all the data in that sheet and print it out.
-        response = requests.get(url=SHEETY_PRICES_ENDPOINT, headers= self.sheety_auth_token)
+        response = requests.get(url=self.SHEETY_PRICES_ENDPOINT, headers= self.sheety_auth_token)
         data = response.json()
         self.destination_data = data["prices"]
         # Try importing pretty print and printing the data out again using pprint() to see it formatted.
@@ -34,8 +34,23 @@ class DataManager:
                 }
             }
             response = requests.put(
-                url=f"{SHEETY_PRICES_ENDPOINT}/{city['id']}",
+                url=f"{self.SHEETY_PRICES_ENDPOINT}/{city['id']}",
                 json=new_data,
                 headers= self.sheety_auth_token
             )
             print(response.text)
+
+    def get_customer_emails(self):
+        """
+        Uses the Sheety API to GET all the user email addresses from the "users" sheet
+        and stores the result in the DataManager's user_data attribute.
+
+        Returns:
+        dict: A dictionary of user data with the keys of the dictionary as the user's email
+        address and the values as dictionaries containing the user's first name and last name.
+        """
+        repsonse = requests.get(url=self.SHEETY_USERS_ENDPOINT, headers= self.sheety_auth_token)
+        data = repsonse.json()
+        self.user_data = data["users"]
+        return self.user_data
+

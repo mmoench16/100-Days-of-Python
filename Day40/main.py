@@ -9,11 +9,15 @@ from notification_manager import NotificationManager
 
 data_manager = DataManager()
 sheet_data = data_manager.get_destination_data()
+user_data = data_manager.get_customer_emails()
 flight_search = FlightSearch()
 notification_manager = NotificationManager()
 
 # Set your origin airport
 ORIGIN_CITY_IATA = "LON"
+
+# ==================== Get User Info ====================
+user_emails = [row["whatIsYourEmailAddress?"] for row in user_data]
 
 # ==================== Update the Airport Codes in Google Sheet ====================
 
@@ -44,6 +48,18 @@ for destination in sheet_data:
     print(f"{destination['city']}: £{cheapest_flight.price}")
     # Slowing down requests to avoid rate limit
     time.sleep(2)
+
+    if cheapest_flight.price == "N/A":
+        print(f"No direct flight to {destination['city']}. Looking for indirect flights...")
+        flights = flight_search.check_flights(
+            ORIGIN_CITY_IATA,
+            destination["iataCode"],
+            from_time=tomorrow,
+            to_time=six_month_from_today,
+            is_direct=False
+        )
+        cheapest_flight = find_cheapest_flight(flights)
+        print(f"Cheapest indirect flight price is: £{cheapest_flight.price}")
 
     if cheapest_flight.price != "N/A" and cheapest_flight.price < destination["lowestPrice"]:
         print(f"Lower price flight found to {destination['city']}!")
