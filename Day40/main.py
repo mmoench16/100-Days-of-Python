@@ -70,9 +70,26 @@ for destination in sheet_data:
         # )
         # SMS not working? Try whatsapp instead.
         notification_manager.send_whatsapp(
-            message_body=f"Low price alert! Only £{cheapest_flight.price} to fly "
+            message_body=f"Low price alert! Only GBP{cheapest_flight.price} to fly "
                          f"from {cheapest_flight.origin_airport} to {cheapest_flight.destination_airport}, "
                          f"on {cheapest_flight.out_date} until {cheapest_flight.return_date}."
         )
 
+        if cheapest_flight.stops > 0:
+            message=(
+                 f"Low price alert! Only GBP{cheapest_flight.price} to fly "
+                 f"from {cheapest_flight.origin_airport} to {cheapest_flight.destination_airport}, "
+                 f"on {cheapest_flight.out_date} until {cheapest_flight.return_date}. {cheapest_flight.stops} stop over."
+                )
+        else:
+            message=(
+                 f"Low price alert! Only GBP{cheapest_flight.price} to fly directly "
+                 f"from {cheapest_flight.origin_airport} to {cheapest_flight.destination_airport}, "
+                 f"on {cheapest_flight.out_date} until {cheapest_flight.return_date}."
+                )
 
+        for user_email in user_emails:
+            notification_manager.send_emails(
+                message_body=message,
+                recipient_email=user_email
+            )
