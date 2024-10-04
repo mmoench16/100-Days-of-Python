@@ -67,5 +67,7 @@
 			"path": "Day40"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "100-Days-of-Python"
+	}
 }
