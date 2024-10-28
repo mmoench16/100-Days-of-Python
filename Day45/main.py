@@ -1,37 +1,57 @@
 from bs4 import BeautifulSoup
 import requests
 
-response = requests.get("https://news.ycombinator.com/")
+response = requests.get("https://www.empireonline.com/movies/features/best-movies-2/")
+best_movies_page = response.text
 
-yc_web_page = response.text
+soup = BeautifulSoup(best_movies_page, "html.parser")
 
-soup = BeautifulSoup(yc_web_page, "html.parser")
+movies = soup.select(selector="h3")
 
-elements_to_remove = soup.find_all("span", class_="sitebit comhead")
+movie_list = [movie.get_text() for movie in movies]
 
-for element in elements_to_remove:
-    element.extract()
+# for movie in movies:
+#     movie_list.append(movie.getText())
 
-all_elements = soup.find_all(class_="athing")
+movie_list.reverse()
 
-# print(all_elements[0])
+# print(movie_list)
 
-article_texts = []
-article_links = []
+with open("movies.txt", "w") as file:
+    for movie in movie_list:
+        file.write(f"{movie}\n")
 
-for element in all_elements:
-    article_texts.append(element.find(class_="titleline").find("a").getText())
-    article_links.append(element.find(class_="titleline").find("a").get("href"))
+# response = requests.get("https://news.ycombinator.com/")
 
-all_subtexts = soup.find_all(class_="subtext")
+# yc_web_page = response.text
 
-article_upvotes = []
+# soup = BeautifulSoup(yc_web_page, "html.parser")
 
-for subtext in all_subtexts:
-    if subtext.find(class_="score") != None:
-        article_upvotes.append(int(subtext.find(class_="score").getText().split()[0]))
-    else:
-        article_upvotes.append(0)
+# elements_to_remove = soup.find_all("span", class_="sitebit comhead")
+
+# for element in elements_to_remove:
+#     element.extract()
+
+# all_elements = soup.find_all(class_="athing")
+
+# # print(all_elements[0])
+
+# article_texts = []
+# article_links = []
+
+# for element in all_elements:
+#     article_texts.append(element.find(class_="titleline").find("a").getText())
+#     article_links.append(element.find(class_="titleline").find("a").get("href"))
+
+# all_subtexts = soup.find_all(class_="subtext")
+
+# article_upvotes = []
+
+# for subtext in all_subtexts:
+#     if subtext.find(class_="score") != None:
+#         article_upvotes.append(int(subtext.find(class_="score").getText().split()[0]))
+#     else:
+#         article_upvotes.append(0)
 
 # article_upvotes = [int(score.getText().split()[0]) for score in soup.select(selector="span.score")]
 
@@ -47,10 +67,10 @@ for subtext in all_subtexts:
 
 # print("-----")
 
-index_of_max_votes = article_upvotes.index(max(article_upvotes))
-print(index_of_max_votes)
-print(article_texts[index_of_max_votes])
-print(article_links[index_of_max_votes])
+# index_of_max_votes = article_upvotes.index(max(article_upvotes))
+# print(index_of_max_votes)
+# print(article_texts[index_of_max_votes])
+# print(article_links[index_of_max_votes])
 
 # ----------------------------------------------
 # import lxml
