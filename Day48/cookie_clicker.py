@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
+import pandas as pd
 from selenium.webdriver.common.keys import Keys
 
 # Keeps Chrome open
@@ -37,47 +38,62 @@ def get_money() -> int:
     """
     return int(driver.find_element(By.ID, value="money").text)
 
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
-click_cookie()
+def get_store_items() -> pd.DataFrame:
+    """
+    Get the current store items.
 
-time.sleep(1)
+    This function assumes that the store has been rendered and the
+    items are visible. No error checking is performed.
 
-store = driver.find_element(By.ID, value="store")
-items = store.find_elements(By.CSS_SELECTOR, value="#store div")
-item_ids = [item.get_attribute("id") for item in items]
-print(item_ids)
-item_availability = ["grayed" not in item.get_attribute("class") for item in items]
-print(item_availability)
+    Returns:
+        pd.DataFrame: A DataFrame containing the id, availability and
+        price of each store item.
+    """
+    store = driver.find_element(By.ID, value="store")
+    items = store.find_elements(By.CSS_SELECTOR, value="#store div")
+    item_ids = [item.get_attribute("id") for item in items]
+    print(item_ids)
+    item_availability = ["grayed" not in item.get_attribute("class") for item in items]
+    print(item_availability)
+    item_prices = [item.find_element(By.CSS_SELECTOR, value="b").text for item in items]
+    print(item_prices)
 
+    for idx, item in enumerate(item_prices):
+        if item == '':
+            item_prices[idx] = 0
+        else:
+            item_prices[idx] = int(item.split("-")[1].strip().replace(",", ""))
 
-# timeout = time.time() + 10 # 60*5+1
-# time_interval = time.time() + 5
+    store_item_info = pd.DataFrame({
+            'id': item_ids,
+            'available': item_availability,
+            'price': item_prices
+    })
 
-# while True:
+    return store_item_info
 
-#     click_cookie()
-#     time.sleep(0.01)
+def best_available_upgrade(data: pd.DataFrame):
+    best_upgrade = data[data['available'] == True].sort_values(by='price', ascending=False).iloc[0]
 
-#     if time.time() > time_interval:
-#         money = get_money()
-#         print(money)
-#         time_interval = time.time() + 5
+    return best_upgrade
+
+timeout = time.time() + 15 # 60*5+1
+time_interval = time.time() + 5
+
+while True:
+
+    click_cookie()
+
+    if time.time() > time_interval:
+        store_items = get_store_items()
+        best_upgrade = best_available_upgrade(store_items)
+        buy_item = driver.find_element(By.ID, value=best_upgrade.id)
+        buy_item.click()
+        print("Buying " + best_upgrade.id)
+        time_interval = time.time() + 5
     
-#     if time.time() > timeout:
-#         break
+    if time.time() > timeout:
+        break
 
 # print(get_money())
 # print("Done")
