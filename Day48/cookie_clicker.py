@@ -38,6 +38,11 @@ def get_money() -> int:
     """
     return int(driver.find_element(By.ID, value="money").text)
 
+
+store = driver.find_element(By.ID, value="store")
+items = store.find_elements(By.CSS_SELECTOR, value="#store div")
+ITEM_IDS = [item.get_attribute("id") for item in items]
+
 def get_store_items() -> pd.DataFrame:
     """
     Get the current store items.
@@ -51,11 +56,11 @@ def get_store_items() -> pd.DataFrame:
     """
     store = driver.find_element(By.ID, value="store")
     items = store.find_elements(By.CSS_SELECTOR, value="#store div")
-    item_ids = [item.get_attribute("id") for item in items]
+    item_ids = [item.get_attribute("id") for item in items if item.get_attribute("id") in ITEM_IDS]
     print(item_ids)
-    item_availability = ["grayed" not in item.get_attribute("class") for item in items]
+    item_availability = ["grayed" not in item.get_attribute("class") for item in items if item.get_attribute("id") in ITEM_IDS]
     print(item_availability)
-    item_prices = [item.find_element(By.CSS_SELECTOR, value="b").text for item in items]
+    item_prices = [item.find_element(By.CSS_SELECTOR, value="b").text for item in items if item.get_attribute("id") in ITEM_IDS]
     print(item_prices)
 
     for idx, item in enumerate(item_prices):
@@ -77,7 +82,7 @@ def best_available_upgrade(data: pd.DataFrame):
 
     return best_upgrade
 
-timeout = time.time() + 15 # 60*5+1
+timeout = time.time() + 60*1
 time_interval = time.time() + 5
 
 while True:
@@ -95,6 +100,10 @@ while True:
     if time.time() > timeout:
         break
 
+cps = driver.find_element(By.ID, value="cps").text
+print(cps)
+
 # print(get_money())
 # print("Done")
+# driver.close() # closes the tab
 # driver.quit() # closes the browser
