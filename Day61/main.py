@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from flask_wtf import FlaskForm
+from flask_bootstrap import Bootstrap5
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Email, Length
 from dotenv import load_dotenv
@@ -14,6 +15,7 @@ class LoginForm(FlaskForm):
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+bootstrap = Bootstrap5(app)
 
 @app.route("/")
 def home():
