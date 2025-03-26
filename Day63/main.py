@@ -51,6 +51,35 @@ def add():
         return redirect(url_for("home"))
     return render_template("add.html")
 
+@app.route("/edit", methods=["GET", "POST"])
+def edit():
+    book_id = request.args.get("id", type=int)
+    if not book_id:
+        return "Invalid book ID", 400  # Return a 400 Bad Request if the ID is missing or invalid
+
+    book_to_update = db.session.get(Book, book_id)
+    if not book_to_update:
+        return "Book not found", 404
+
+    if request.method == "POST":
+        try:
+            book_to_update.rating = float(request.form["rating"])
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            return f"An error occurred: {e}", 400
+        return redirect(url_for("home"))
+
+    return render_template("edit.html", book=book_to_update)
+
+@app.route("/delete")
+def delete():
+    book_id = request.args.get("id", type=int)
+    book_to_delete = db.get_or_404(Book, book_id)
+    db.session.delete(book_to_delete)
+    db.session.commit()
+    return redirect(url_for("home"))
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5001)  # Change the port number to your desired value
 
