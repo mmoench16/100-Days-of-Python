@@ -4,9 +4,6 @@
 			"path": "."
 		},
 		{
-			"path": "Day38"
-		},
-		{
 			"path": "Day39"
 		},
 		{
@@ -71,6 +68,9 @@
 		},
 		{
 			"path": "Day63_SQLite"
+		},
+		{
+			"path": "Day64"
 		}
 	],
 	"settings": {
