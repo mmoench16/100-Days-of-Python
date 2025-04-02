@@ -13,6 +13,15 @@ class Base(DeclarativeBase):
 
 db = SQLAlchemy(model_class=Base)
 
+class ReviewForm(FlaskForm):
+    rating = StringField('Your rating out of 10, e.g. 7.5', validators=[DataRequired()])
+    review = StringField('Your Review', validators=[DataRequired()])    
+    submit = SubmitField('Submit')
+
+class AddMovieForm(FlaskForm):
+    title = StringField('Movie Title', validators=[DataRequired()])
+    submit = SubmitField('Submit')
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///movies.db"
@@ -57,6 +66,32 @@ def home():
     all_movies = result.scalars()
     return render_template("index.html", movies=all_movies)
 
+@app.route("/edit", methods=["GET", "POST"])
+def edit():
+    form = ReviewForm()
+    movie_id = request.args.get("id")
+    movie_to_update = db.get_or_404(Movie, movie_id)
+    if form.validate_on_submit():
+        movie_to_update.review = form.review.data
+        movie_to_update.rating = float(form.rating.data)
+        db.session.commit()
+        return redirect(url_for("home"))
+    return render_template("edit.html", form=form)
+
+@app.route("/delete")
+def delete():
+    movie_id = request.args.get("id")
+    movie_to_delete = db.get_or_404(Movie, movie_id)
+    db.session.delete(movie_to_delete)
+    db.session.commit()
+    return redirect(url_for("home"))
+
+@app.route("/add", methods=["GET", "POST"])
+def add():
+    form = AddMovieForm()
+    if form.validate_on_submit():
+        return redirect(url_for("home"))
+    return render_template("add.html", form=form)
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5001)
