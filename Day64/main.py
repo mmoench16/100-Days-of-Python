@@ -6,7 +6,14 @@ from sqlalchemy import Integer, String, Float
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired
+from dotenv import load_dotenv
+import os
 import requests
+
+# Load environment variables from .env file
+load_dotenv()
+api_token = os.getenv("TMDB_ACCESS_TOKEN")
+api_key = os.getenv("TMDB_API_KEY")
 
 class Base(DeclarativeBase):
     pass
@@ -95,3 +102,14 @@ def add():
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
+
+def get_movie_data(movie_title):
+    url = f"https://api.themoviedb.org/3/search/movie?query={movie_title}&include_adult=false&language=en-US&page=1"
+
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"Bearer {api_token}"
+    }
+
+    response = requests.get(url, headers=headers)
+    print(response.text)
