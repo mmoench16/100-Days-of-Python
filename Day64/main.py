@@ -29,6 +29,31 @@ class AddMovieForm(FlaskForm):
     title = StringField('Movie Title', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+def get_movie_data(movie_title):
+    url = f"https://api.themoviedb.org/3/search/movie?query={movie_title}&include_adult=false&language=en-US&page=1"
+
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"Bearer {api_token}"
+    }
+
+    response = requests.get(url, headers=headers)
+    data = response.json()["results"]
+    return data
+
+def get_movie_details(movie_id):
+    url = f"https://api.themoviedb.org/3/movie/{movie_id}?language=en-US"
+
+    headers = {
+        "accept": "application/json",
+        "Authorization": f"Bearer {api_token}"
+    }
+
+    response = requests.get(url, headers=headers)
+    data = response.json()
+    return data
+
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '8BYkEfBA6O6donzWlSihBXox7C0sKR6b'
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///movies.db"
@@ -97,19 +122,28 @@ def delete():
 def add():
     form = AddMovieForm()
     if form.validate_on_submit():
-        return redirect(url_for("home"))
+        movie_title = form.title.data
+        movie_data = get_movie_data(movie_title)
+        return render_template("select.html", movie_data=movie_data)
     return render_template("add.html", form=form)
+
+@app.route("/find")
+def find_movie():
+    movie_id = request.args.get("id")
+    movie_details = get_movie_details(movie_id)
+    new_movie = Movie(
+        title=movie_details["original_title"],
+        year=movie_details["release_date"].split("-")[0],
+        description=movie_details["overview"],
+        rating=0,
+        ranking=movie_details["vote_average"],
+        review="Write one :)",
+        img_url=f"https://image.tmdb.org/t/p/w500{movie_details['poster_path']}"
+    )
+    db.session.add(new_movie)
+    db.session.commit()
+    print(movie_details)
+    return redirect(url_for("home"))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
-
-def get_movie_data(movie_title):
-    url = f"https://api.themoviedb.org/3/search/movie?query={movie_title}&include_adult=false&language=en-US&page=1"
-
-    headers = {
-        "accept": "application/json",
-        "Authorization": f"Bearer {api_token}"
-    }
-
-    response = requests.get(url, headers=headers)
-    print(response.text)
