@@ -108,7 +108,7 @@ def edit():
         movie_to_update.rating = float(form.rating.data)
         db.session.commit()
         return redirect(url_for("home"))
-    return render_template("edit.html", form=form)
+    return render_template("edit.html", movie=movie_to_update, form=form)
 
 @app.route("/delete")
 def delete():
@@ -142,8 +142,7 @@ def find_movie():
     )
     db.session.add(new_movie)
     db.session.commit()
-    print(movie_details)
-    return redirect(url_for("home"))
+    return redirect(url_for("edit", id=new_movie.id))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
