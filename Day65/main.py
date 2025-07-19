@@ -139,11 +139,24 @@ def update_cafe(cafe_id):
         return jsonify({"success": "Successfully updated the cafe."}), 200
     except ValueError as ve:
         return jsonify(error={"Missing Data": str(ve)}), 400
-    except Exception as e:
+    except Exception:
         return jsonify(error={"Internal Error": "An unexpected error occurred."}), 500
 
 # HTTP DELETE - Delete Record
-
+@app.route("/delete/<int:cafe_id>", methods=["DELETE"])
+def delete_cafe(cafe_id):
+    try:
+        requested_api_key = request.args.get("api_key")
+        if requested_api_key != "TopSecretAPIKey":
+            return jsonify(error={"Forbidden": "You do not have permission to delete this cafe."}), 403
+        cafe = db.session.query(Cafe).get(cafe_id)
+        if not cafe:
+            return jsonify(error={"Not Found": "Sorry, a cafe with that id was not found in the database."}), 404
+        db.session.delete(cafe)
+        db.session.commit()
+        return jsonify({"success": "Successfully deleted the cafe."}), 200
+    except Exception:
+        return jsonify(error={"Internal Error": "An unexpected error occurred."}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)
