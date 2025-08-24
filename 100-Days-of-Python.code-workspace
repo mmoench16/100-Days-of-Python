@@ -4,9 +4,6 @@
 			"path": "."
 		},
 		{
-			"path": "Day48"
-		},
-		{
 			"path": "Day49"
 		},
 		{
@@ -65,6 +62,9 @@
 		},
 		{
 			"path": "Day68"
+		},
+		{
+			"path": "Day69"
 		}
 	],
 	"settings": {
